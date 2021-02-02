@@ -6,6 +6,10 @@ import VueResource from 'vue-resource';
 
 Vue.use(VueResource);
 
+Vue.filter("currencyFilter", (value) => {
+  return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2 }) + " TL"
+})
+
 new Vue({
   el: '#app',
   router,
