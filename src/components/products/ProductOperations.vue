@@ -91,8 +91,8 @@ export default {
   beforeRouteLeave(to, from, next) {
     if (
       (this.product.title.length > 0 ||
-        this.product.count.length > 0 ||
-        this.product.price.length > 0 ||
+        this.product.count > 0 ||
+        this.product.price > 0 ||
         this.product.description.length > 0) &&
       !this.saveButtonClicked
     ) {
@@ -103,7 +103,8 @@ export default {
       )
         next();
       else next(false);
-    } else next();
+    }
+    else next();
   },
 };
 </script>
