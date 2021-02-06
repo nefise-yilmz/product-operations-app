@@ -1,5 +1,11 @@
 <template>
   <div class="container">
+    <div class="loading"  :style="isLoading">
+      <div class="lds-ripple">
+        <div></div>
+        <div></div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-6 offset-3 pt-3 card mt-5 shadow">
         <div class="card-body">
@@ -79,13 +85,24 @@ export default {
     changeDisabled() {
       if (
         this.product.title.length > 0 &&
-        this.product.count.length > 0 &&
-        this.product.price.length > 0 &&
+        this.product.count > 0 &&
+        this.product.price > 0 &&
         this.product.description.length > 0
       ) {
         return false;
       }
       return true;
+    },
+    isLoading() {
+      if (this.saveButtonClicked) {
+        return {
+          display: "block",
+        }
+      } else {
+        return {
+          display: "none",
+        }
+      }
     },
   },
   beforeRouteLeave(to, from, next) {
@@ -103,8 +120,7 @@ export default {
       )
         next();
       else next(false);
-    }
-    else next();
+    } else next();
   },
 };
 </script>
