@@ -1,5 +1,11 @@
 <template>
   <div class="container">
+    <div class="loading" :style="isLoading">
+      <div class="lds-ripple">
+        <div></div>
+        <div></div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-6 offset-3 pt-3 card mt-5 shadow">
         <div class="card-body">
@@ -7,8 +13,14 @@
           <hr />
           <div class="form-group">
             <label>Ürün Adı</label>
-            <select class="form-control" v-model="selectedProduct" @change="productSelected">
+            <select
+              class="form-control"
+              v-model="selectedProduct"
+              @change="productSelected"
+            >
+              <option selected disabled>Lütfen bir ürün seçiniz</option>
               <option
+                :disabled="product.count == 0"
                 v-for="product in getProducts"
                 :key="product"
                 :value="product.key"
@@ -22,13 +34,15 @@
               <div class="row">
                 <div class="col-12 text-center">
                   <div class="mb-3">
-                    <span class="badge badge-info">Stok : {{product.count}}</span>
+                    <span class="badge badge-info"
+                      >Stok : {{ product.count }}</span
+                    >
                     <span class="badge badge-primary"
-                      >Fiyat : {{product.price | currencyFilter}}</span
+                      >Fiyat : {{ product.price | currencyFilter }}</span
                     >
                   </div>
                   <p class="border border-warning p-2 text-secondary">
-                    {{product.description}}
+                    {{ product.description }}
                   </p>
                 </div>
               </div>
@@ -40,10 +54,17 @@
               type="text"
               class="form-control"
               placeholder="Ürün adetini giriniz.."
+              v-model="decreaseCount"
             />
           </div>
           <hr />
-          <button class="btn btn-primary">Kaydet</button>
+          <button
+            class="btn btn-primary"
+            :disabled="changeDisabled"
+            @click="save"
+          >
+            Kaydet
+          </button>
         </div>
       </div>
     </div>
@@ -56,17 +77,62 @@ export default {
   data() {
     return {
       selectedProduct: null,
-      product : null
+      product: null,
+      decreaseCount: null,
+      saveButtonClicked: false,
     };
   },
   computed: {
     ...mapGetters(["getProducts"]),
+    isLoading() {
+      if (this.saveButtonClicked) {
+        return {
+          display: "block",
+        };
+      } else {
+        return {
+          display: "none",
+        };
+      }
+    },
+    changeDisabled() {
+      if (
+        this.selectedProduct !==null &&
+        this.decreaseCount > 0
+      ) {
+        return false;
+      }
+      return true;
+    },
   },
-  methods:{
-    productSelected(){
+  methods: {
+    productSelected() {
       this.product = this.$store.getters.getProduct(this.selectedProduct)[0];
-    }
-  }
+    },
+    save() {
+      this.saveButtonClicked = true;
+      let product = {
+        key: this.selectedProduct,
+        count: this.decreaseCount,
+      };
+
+      this.$store.dispatch("sellProduct", product);
+    },
+  },
+  beforeRouteLeave(to, from, next) {
+    if (
+      (this.selectedProduct !== null || this.product.count > 0) &&
+      !this.saveButtonClicked
+    ) {
+      if (
+        confirm(
+          "Kaydedilmemiş değişiklikler var. Çıkmak istediğinize emin misiniz?"
+        )
+      )
+        next();
+      else next(false);
+    } else next();
+  },
 };
 </script scoped>
  .border-danger {
