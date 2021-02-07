@@ -73,35 +73,26 @@
 
 <script>
 import { mapGetters } from "vuex";
+import { loadingMixin } from "../../loadingMixin";
 export default {
   data() {
     return {
       selectedProduct: null,
       product: null,
       decreaseCount: null,
-      saveButtonClicked: false,
     };
   },
   computed: {
     ...mapGetters(["getProducts"]),
-    isLoading() {
-      if (this.saveButtonClicked) {
-        return {
-          display: "block",
-        };
-      } else {
-        return {
-          display: "none",
-        };
-      }
-    },
     changeDisabled() {
       if (
-        this.selectedProduct !==null &&
-        this.decreaseCount > 0
+        this.selectedProduct !== null &&
+        this.decreaseCount > 0 &&
+        this.decreaseCount <= this.product.count
       ) {
         return false;
       }
+
       return true;
     },
   },
@@ -133,6 +124,7 @@ export default {
       else next(false);
     } else next();
   },
+  mixins: [loadingMixin],
 };
 </script scoped>
  .border-danger {

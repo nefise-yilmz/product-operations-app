@@ -63,6 +63,8 @@
 </template>
 
 <script>
+import { loadingMixin } from "../../loadingMixin";
+
 export default {
   data() {
     return {
@@ -72,8 +74,7 @@ export default {
         price: null,
         description: "",
       },
-      saveButtonClicked: false,
-    };
+    }
   },
   methods: {
     saveProduct() {
@@ -93,17 +94,7 @@ export default {
       }
       return true;
     },
-    isLoading() {
-      if (this.saveButtonClicked) {
-        return {
-          display: "block",
-        }
-      } else {
-        return {
-          display: "none",
-        }
-      }
-    },
+
   },
   beforeRouteLeave(to, from, next) {
     if (
@@ -122,6 +113,7 @@ export default {
       else next(false);
     } else next();
   },
+  mixins:[loadingMixin]
 };
 </script>
 
